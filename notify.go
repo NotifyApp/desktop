@@ -1,31 +1,41 @@
 package main
 
 import (
+	"runtime"
 	"fmt"
 	"os/exec"
-	"github.com/gorilla/websocket"
-	"flag"
-	"log"
-	"net/url"
-	"os"
-	"os/signal"
-	"time"
+	// "github.com/gorilla/websocket"
+	// "flag"
+	// "log"
+	// "net/url"
+	// "os"
+	// "os/signal"
+	// "time"
 )
 
-func notification(text string, title string, sound string) {
-	notification := fmt.Sprintf("display notification \"%s\" with title \"%s\" sound name \"%s\"", text, title, sound)
-	cmd := exec.Command("osascript", "-e", notification)
-	cmd.Start()
+func notify(text string, title string, sound string, icon string) {
+	switch runtime.GOOS {
+	case "darwin":
+		notification := fmt.Sprintf("display notification \"%s\" with title \"%s\" sound name \"%s\"", text, title, sound)
+		cmd := exec.Command("osascript", "-e", notification)
+		cmd.Start()
+	case "linux":
+		cmd := exec.Command("notify-send", "-i", icon, title, text)
+		cmd.Start()
+	case "windows":
+		fmt.Printf("Soon\n")
+	}
+	
 }
 
-var addr = flag.String("addr", "localhost:5000", "http service address")
+//var addr = flag.String("addr", "localhost:5000", "http service address")
 
 func main() {
 	fmt.Printf("Start\n")
-	//notification("Alexandre send you a message !", "Message", "Glass")
+	//notify("Alexandre send you a message !", "Message", "Glass", "")
 
 
-	flag.Parse()
+	/*flag.Parse()
 	log.SetFlags(0)
 
 	interrupt := make(chan os.Signal, 1)
@@ -87,5 +97,5 @@ func main() {
 			c.Close()
 			return
 		}
-	}
+	}*/
 }
