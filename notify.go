@@ -4,13 +4,16 @@ import (
 	"runtime"
 	"fmt"
 	"os/exec"
-	// "github.com/gorilla/websocket"
-	// "flag"
-	// "log"
-	// "net/url"
-	// "os"
-	// "os/signal"
-	// "time"
+	"github.com/gorilla/websocket"
+	"flag"
+	"log"
+	"net/url"
+	"os"
+	"os/signal"
+	"encoding/json"
+	"io"
+	"strings"
+	//"time"
 )
 
 func notify(text string, title string, sound string, icon string) {
@@ -25,17 +28,18 @@ func notify(text string, title string, sound string, icon string) {
 	case "windows":
 		fmt.Printf("Soon\n")
 	}
-	
 }
 
-//var addr = flag.String("addr", "localhost:5000", "http service address")
+var addr = flag.String("addr", "localhost:5000", "http service address")
+
+type Notification struct {
+	title, text string
+}
 
 func main() {
 	fmt.Printf("Start\n")
-	//notify("Alexandre send you a message !", "Message", "Glass", "")
 
-
-	/*flag.Parse()
+	flag.Parse()
 	log.SetFlags(0)
 
 	interrupt := make(chan os.Signal, 1)
@@ -62,40 +66,21 @@ func main() {
 				return
 			}
 			log.Printf("recv: %s", message)
+
+			dec := json.NewDecoder(strings.NewReader(string(message)))
+			var m Notification
+			if err := dec.Decode(&m); err == io.EOF {
+				break
+			} else if err != nil {
+				log.Fatal(err)
+			}
+			if (m.text != "") {
+				notify(m.text, m.title, "Glass", "")
+			}
 		}
 	}()
 
-	// err = c.WriteMessage(websocket.TextMessage, []byte("test"))
-	// if err != nil {
-	// 	log.Println("write:", err)
-	// 	return
-	// }
-
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
-
 	for {
-		select {
-		default <-done:
-			err := c.WriteMessage(websocket.TextMessage, []byte("salut"))
-			if err != nil {
-				log.Println("write:", err)
-				return
-			}
-		case <-interrupt:
-			log.Println("interrupt")
-			// To cleanly close a connection, a client should send a close
-			// frame and wait for the server to close the connection.
-			err := c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-			if err != nil {
-				log.Println("write close:", err)
-				return
-			}
-			select {
-			case <-done:
-			}
-			c.Close()
-			return
-		}
-	}*/
+		
+	}
 }
