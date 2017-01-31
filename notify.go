@@ -67,6 +67,7 @@ func main() {
 			}
 			log.Printf("recv: %s", message)
 
+			// Parsing error
 			dec := json.NewDecoder(strings.NewReader(string(message)))
 			var m Notification
 			if err := dec.Decode(&m); err == io.EOF {
@@ -75,12 +76,13 @@ func main() {
 				log.Fatal(err)
 			}
 			if (m.text != "") {
+				fmt.Printf("Title : %s, Text : %s", m.title, m.text)
 				notify(m.text, m.title, "Glass", "")
 			}
 		}
 	}()
 
 	for {
-		
+		// Interrupt
 	}
 }
