@@ -3,11 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/url"
 	"os/exec"
 	"runtime"
 
 	"github.com/gorilla/websocket"
+	"github.com/zserge/webview"
 )
 
 func notify(text string, title string, sound string, icon string) {
@@ -29,9 +32,7 @@ type Notification struct {
 	Message string `json:"message"`
 }
 
-func main() {
-	fmt.Printf("Start\n")
-
+func handleNotifs() {
 	url := "ws://localhost:8080/ws"
 	var dialer *websocket.Dialer
 
@@ -55,4 +56,19 @@ func main() {
 
 		log.Printf("received: %s\n", msg)
 	}
+}
+
+func main() {
+	fmt.Printf("Start\n")
+
+	go handleNotifs()
+	content, err := ioutil.ReadFile("home.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	w := webview.New(webview.Settings{
+		Title: "NotifyApp",
+		URL:   `data:text/html,` + url.PathEscape(string(content)),
+	})
+	w.Run()
 }
